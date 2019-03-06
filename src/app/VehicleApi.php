@@ -12,7 +12,7 @@ class VehicleApi extends Model
     {
         $fields = collect(['Description', 'VehicleId']);
         $httpClient = new Client();
-        $path = sprintf(env('NHTSA_REQUEST_PATTERN'), $yearModel, $manufacturer, $model);
+        $path = sprintf(env('NHTSA_MODEL_REQUEST_PATTERN'), $yearModel, $manufacturer, $model);
 
         $response = $httpClient->get(
             env('NHTSA_HOST') . env('NHTSA_ENDPOINT') . $path,
@@ -30,5 +30,21 @@ class VehicleApi extends Model
             $filteredRecords->push($fields->combine(array_values($item)));
         });
         return $filteredRecords;
+    }
+
+    public function getVehiclesCrashRating(Collection $vehicles) :Collection
+    {
+        $httpClient = new Client();
+        $vehicles->each(function (&$item) use ($httpClient) {
+
+            $path = sprintf(env('NHTSA_RATING_REQUEST_PATTERN'), $item['VehicleId']);
+            $response = $httpClient->get(
+                env('NHTSA_HOST') . env('NHTSA_ENDPOINT') . $path,
+                ['query' => ['format' => 'json']]
+            );
+            $rating = json_decode($response->getBody()->getContents(), true);
+            $item->put('CrashRating' , $rating['Results'][0]['OverallRating']);
+        });
+        return $vehicles;
     }
 }

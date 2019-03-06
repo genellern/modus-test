@@ -27,6 +27,9 @@ class Vehicles extends Controller
         if (!empty($modelYear) && !empty($manufacturer) && !empty($model)) {
 
             $vehicles = $this->vehicleApi->getVehiclesFromApi($modelYear, $manufacturer, $model);
+            if (filter_var($this->request->query('withRating'), FILTER_VALIDATE_BOOLEAN) === true) {
+                $vehicles = $this->vehicleApi->getVehiclesCrashRating($vehicles);
+            }
 
             $response = [
                 'Count' => $vehicles->count(),
