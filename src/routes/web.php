@@ -14,3 +14,5 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/vehicles/{yearModel}/{manufacturer}/{model}', 'Vehicles@index');
