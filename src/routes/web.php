@@ -16,3 +16,4 @@ Route::get('/', function () {
 });
 
 Route::get('/vehicles/{yearModel}/{manufacturer}/{model}', 'Vehicles@index');
+Route::post('/vehicles', 'Vehicles@index');

@@ -12,9 +12,12 @@ class VehicleApi extends Model
     {
         $fields = collect(['Description', 'VehicleId']);
         $httpClient = new Client();
-        $query = sprintf(env('NHTSA_REQUEST_PATTERN'), $yearModel, $manufacturer, $model);
+        $path = sprintf(env('NHTSA_REQUEST_PATTERN'), $yearModel, $manufacturer, $model);
 
-        $response = $httpClient->get(env('NHTSA_HOST') . env('NHTSA_ENDPOINT') . $query);
+        $response = $httpClient->get(
+            env('NHTSA_HOST') . env('NHTSA_ENDPOINT') . $path,
+            ['query' => ['format' => 'json']]
+        );
         $records = json_decode($response->getBody()->getContents(), true);
         return $this->organizeVehiclesCollection($records['Results'], $fields);
     }
